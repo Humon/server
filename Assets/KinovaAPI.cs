@@ -266,13 +266,13 @@ public class KinovaAPI : MonoBehaviour
 
     }
 
+    //public static int SetFingerPosition(bool rightArm, float fp1, float fp2, float fp3)
     public static int SetFingerPosition(bool rightArm, float fp1, float fp2, float fp3)
     {
         if (initSuccessful)
         {
             _SetFingerPosition(rightArm, fp1, fp2, fp3);
         }
-
         return 0;
     }
 
@@ -292,9 +292,9 @@ public class KinovaAPI : MonoBehaviour
         {
             _MoveArmCartesianPositionWithFingers(rightArm, x, y, z, thetaX, thetaY, thetaZ, fp1, fp2, fp3);
         }
-        
         return 0;
     }
+
     public static int MoveArmCartesianPositionRelative(bool rightArm, float X, float Y, float Z, float ThetaX, float ThetaY, float ThetaZ)
     {
         if (initSuccessful)

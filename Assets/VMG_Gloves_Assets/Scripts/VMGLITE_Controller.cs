@@ -302,7 +302,7 @@ namespace VML
                 FingerData[8] = ringFlexAnglesR[0][2];
                 FingerData[9] = littleFlexAnglesR[0][2];
                 
-                myNetworkManager.SendMoveFingers (FingerData);
+                //myNetworkManager.SendMoveFingers (FingerData);
             }
 
 

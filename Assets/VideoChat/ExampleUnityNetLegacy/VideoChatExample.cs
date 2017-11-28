@@ -137,7 +137,6 @@ public class VideoChatExample : MonoBehaviour {
 	}
 
 	void OnGUI () {
-        return;
 		if( !VideoChat.tempImage && !VideoChat.videoPrimed || !UI )
 			return;
 
@@ -199,10 +198,6 @@ public class VideoChatExample : MonoBehaviour {
 	
 	
 	void Update() {
-
-        if (Input.GetKeyDown(KeyCode.W)) {
-            ConnectToWebCam(); 
-        }
 
 		// You can utilize VideoChat.receivedAudioPackets and VideoChat.receivedVideoPackets to save/record AV data coming over the network
 		// Otherwise, this clears those packets (not recording)
@@ -280,7 +275,10 @@ public class VideoChatExample : MonoBehaviour {
 			if( testMode )
 				ReceiveVideo( currentPacket.x, currentPacket.y, currentPacket.data, System.Convert.ToString( currentPacket.timestamp ) ); //Test mode just displays on one machine
 			else
+            {
+                Debug.Log("sending:" + currentPacket.x + ", " + currentPacket.y + ", " + currentPacket.data.Length + ", " + System.Convert.ToString(currentPacket.timestamp));
 				videoView.RPC( "ReceiveVideo", RPCMode.Others, currentPacket.x, currentPacket.y, currentPacket.data, System.Convert.ToString( currentPacket.timestamp ) ); //Unity Networking
+            }
 		
 			VideoChat.videoPackets.Remove( tempVideoPackets[ i ] );
 		}
@@ -310,20 +308,21 @@ public class VideoChatExample : MonoBehaviour {
 		  MasterServer.RegisterHost ("MidnightVideoChat", "Test");
 		}
 
-        // Invoke("ConnectToRicohThetaS", 1.0f);
-        VideoChat.deviceIndex = 0;
+        Invoke("ConnectToRicohThetaS", 1.0f);
 	  }
 
-
-    //void ConnectToRicohThetaS ()
-    void ConnectToWebCam()
+    void ConnectToRicohThetaS ()
     {
         List<WebCamDevice> cameras = VideoChat.webCamDevices;
         int cameraIndex = 0;
         for (int i = 0; i < cameras.Count; i++)
         {
-             cameraIndex = i;
-             Debug.Log("cam name:"+cameras[i].name);
+            if (cameras[i].name.Equals("RICOH THETA S"))
+            {
+                cameraIndex = i;
+                Debug.Log("Found Ricoh Theta S!");
+                break;
+            }
         }
         VideoChat.deviceIndex = cameraIndex;
     }

@@ -1,70 +1,130 @@
 fileFormatVersion: 2
-guid: 3879dcd937176492284f447ed2bf5bf9
+guid: 3520fc5828652224cb321c55c79e15a5
 timeCreated: 1485272338
 licenseType: Store
 PluginImporter:
-  serializedVersion: 1
+  serializedVersion: 2
   iconMap: {}
   executionOrder: {}
   isPreloaded: 0
   isOverridable: 0
   platformData:
-    Android:
-      enabled: 1
-      settings: {}
-    Any:
-      enabled: 1
-      settings:
-        Exclude Android: 0
-        Exclude Editor: 0
-        Exclude Linux: 0
-        Exclude Linux64: 0
-        Exclude LinuxUniversal: 0
-        Exclude OSXIntel: 0
-        Exclude OSXIntel64: 0
-        Exclude OSXUniversal: 0
-        Exclude WebGL: 0
-        Exclude Win: 0
-        Exclude Win64: 0
-        Exclude iOS: 0
-    Editor:
-      enabled: 1
-      settings:
-        DefaultValueInitialized: true
-    Linux:
-      enabled: 1
-      settings: {}
-    Linux64:
-      enabled: 1
-      settings: {}
-    LinuxUniversal:
-      enabled: 1
-      settings: {}
-    OSXIntel:
-      enabled: 1
-      settings: {}
-    OSXIntel64:
-      enabled: 1
-      settings: {}
-    OSXUniversal:
-      enabled: 1
-      settings: {}
-    WebGL:
-      enabled: 1
-      settings: {}
-    Win:
-      enabled: 1
-      settings: {}
-    Win64:
-      enabled: 1
-      settings: {}
-    WindowsStoreApps:
-      enabled: 0
-      settings:
-        CPU: AnyCPU
-    iOS:
-      enabled: 1
-      settings: {}
+    data:
+      first:
+        Android: Android
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Any: 
+      second:
+        enabled: 1
+        settings:
+          Exclude Android: 0
+          Exclude Editor: 0
+          Exclude Linux: 0
+          Exclude Linux64: 0
+          Exclude LinuxUniversal: 0
+          Exclude OSXIntel: 0
+          Exclude OSXIntel64: 0
+          Exclude OSXUniversal: 0
+          Exclude WebGL: 0
+          Exclude Win: 0
+          Exclude Win64: 0
+          Exclude iOS: 0
+    data:
+      first:
+        Editor: Editor
+      second:
+        enabled: 1
+        settings:
+          DefaultValueInitialized: true
+    data:
+      first:
+        Facebook: WebGL
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Facebook: Win
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Facebook: Win64
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: Linux
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: Linux64
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: LinuxUniversal
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: OSXIntel
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: OSXIntel64
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: OSXUniversal
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: Win
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Standalone: Win64
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        WebGL: WebGL
+      second:
+        enabled: 1
+        settings: {}
+    data:
+      first:
+        Windows Store Apps: WindowsStoreApps
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
+    data:
+      first:
+        iPhone: iOS
+      second:
+        enabled: 1
+        settings: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 

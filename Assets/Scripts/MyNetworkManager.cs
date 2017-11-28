@@ -216,7 +216,7 @@ public class MyNetworkManager : MonoBehaviour
   private bool connectedToServer = false;
   private bool localRun = false;
 
-  public static bool isServer = false;
+  public static bool isServer = true;
     
   NetworkClient myClient;
 
@@ -282,10 +282,10 @@ public class MyNetworkManager : MonoBehaviour
     //  NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_FINGERS, ReceiveMoveFingers);
 
 
-    //if (!localRun) {
-    //  videoChat.gameObject.SetActive (true); 
-    //  videoChat.StartVideoChat ();
-    //}
+
+      videoChat.gameObject.SetActive (true); 
+      videoChat.StartVideoChat ();
+   
     isAtStartup = false;
 	Debug.Log ("Server running listening on port " + port);
   }
@@ -306,17 +306,17 @@ public class MyNetworkManager : MonoBehaviour
 	//InitClient ();
 	//videoChat.remoteView.GetComponent<CameraController>().StartLocalStream();
 	//Debug.Log ("Started local client");
- // }
+ //}
 
- // private void InitClient ()
- // {
-	//myClient.RegisterHandler (MsgType.Connect, OnConnected);
-	//cameraRig.SetActive (true); // transitively enables VIVE controllers
-	//if (!localRun) {
-	//  videoChat.gameObject.SetActive (true);
-	//}
-	//isAtStartup = false;
- // }
+ //private void InitClient ()
+ //{
+ //   myClient.RegisterHandler (MsgType.Connect, OnConnected);
+ //   cameraRig.SetActive (true); // transitively enables VIVE controllers
+ //   if (!localRun) {
+ //     videoChat.gameObject.SetActive (true);
+ //   }
+ //   isAtStartup = false;
+ //}
 
  // // Client function
  // public void OnConnected (NetworkMessage netMsg)
@@ -328,10 +328,10 @@ public class MyNetworkManager : MonoBehaviour
 	//connectedToServer = true;
  // }
 
-  private void JoinVideoChat ()
-  {
-	videoChat.JoinVideoChat ();
-  }
+ // private void JoinVideoChat ()
+ // {
+	//videoChat.JoinVideoChat ();
+ // }
 
     //shawn test
     //    public void SendMoveArmCartesianPosition_MoveRelativeMessage(bool rightArm, float X, float Y, float Z, float ThetaX, float ThetaY, float ThetaZ)

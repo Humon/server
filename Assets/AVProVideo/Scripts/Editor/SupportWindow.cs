@@ -57,10 +57,11 @@ namespace RenderHeads.Media.AVProVideo.Editor
 		private string _emailVideoFormat = string.Empty;
 		private string _emailDeviceSpecs = string.Empty;
 
+
+
 		//private bool _askForHelp = false;
 		private bool _trySelfSolve = false;
 		private Vector2 _scroll = Vector2.zero;
-
 		private int _selectionIndex = 0;
 		private static string[] _gridNames = { "Ask for Help", "Help Resources", "FAQ" };
 

@@ -24,17 +24,18 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
 
-	private string cameraDeviceName = "RICOH THETA S";
-
- /**@brief Used for initialization of this class
-  * 
-  * @section DESCRIPTION
-  * 
-  * Start(): Is called before the first frame update only if 
-  * the script instance is enabled. For objects added to the 
-  * scene, the Start function will be called on all scripts before
-  * Update, etc are called for any of them. 
-  */
+	//private string cameraDeviceName = "RICOH THETA S";
+    private string cameraDeviceName = "Logitech Webcam C930e";
+    
+  /**@brief Used for initialization of this class
+   * 
+   * @section DESCRIPTION
+   * 
+   * Start(): Is called before the first frame update only if 
+   * the script instance is enabled. For objects added to the 
+   * scene, the Start function will be called on all scripts before
+   * Update, etc are called for any of them. 
+   */
   void Start ()
   {
 	StartLocalStream ();
@@ -58,12 +59,20 @@ public class CameraController : MonoBehaviour
 
 	int cameraIndex = -1;
 	for (int i = 0; i < devices.Length; i++) {
-	  Debug.Log (i + " " + devices [i].name);
-	  if (devices [i].name.Equals (cameraDeviceName)) {
-		cameraIndex = i;
-	  }
-    }
+    	Debug.Log (i + ": " + devices [i].name);
+            if (devices[i].name == cameraDeviceName)
+            {
+                cameraIndex = i;
+                Debug.Log("got cam:" + cameraDeviceName);
 
+            }
+            else {
+                Debug.Log("name didn't match:" + devices[i].name + " with " + cameraDeviceName);
+            }
+    }
+    Debug.Log("index:" + cameraIndex);
+
+        return; // not needed for server
     Renderer rend = this.GetComponentInChildren<Renderer> (); 
 
     WebCamTexture myCam = new WebCamTexture ();          

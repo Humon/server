@@ -46,7 +46,7 @@ public class VideoChatExample : MonoBehaviour {
 	
 	// Use this for initialization
 	IEnumerator Start() {
-	
+       
 		if( Application.isWebPlayer ) {
 			yield return Application.RequestUserAuthorization( UserAuthorization.WebCam | UserAuthorization.Microphone );
 		}
@@ -80,9 +80,11 @@ public class VideoChatExample : MonoBehaviour {
 			VideoChat.vcObject.transform.position = new Vector3( 0, -1.4f, 5 );
 		}
 
+        /*
 		audioView = gameObject.AddComponent< NetworkView >();
 		audioView.stateSynchronization = NetworkStateSynchronization.Off;
 		audioView.group = VideoChat.audioGroup;
+        */
 
 		videoView = gameObject.AddComponent< NetworkView >();
 		videoView.stateSynchronization = NetworkStateSynchronization.Off;
@@ -194,6 +196,7 @@ public class VideoChatExample : MonoBehaviour {
 	
 		return;
 	}
+
 	
 	
 	
@@ -229,19 +232,21 @@ public class VideoChatExample : MonoBehaviour {
 
 		if( oneToManyBroadcast ) {
 			if( ( !testMode && Network.peerType != NetworkPeerType.Server ) || ( Network.peerType == NetworkPeerType.Server && Network.connections.Length < 1 ) ) {
-				VideoChat.PostVideo();
+
+                   VideoChat.PostVideo();
 				return;
 			}
 		}
-		
-		#region AUDIO
+
+        #region AUDIO
+        int numPackets = 0;
+        /*
 		VideoChat.audioThreshold = audioThreshold;
 
 		//Collect source audio, this will create a new AudioPacket and add it to the audioPackets list in the VideoChat static class
 		VideoChat.FromAudio();		
 
 		//Send the latest VideoChat audio packet for a local test or your networking library of choice, in this case Unity Networking
-		int numPackets = VideoChat.audioPackets.Count;				
 		AudioPacket[] tempAudioPackets = new AudioPacket[ numPackets ];
 		VideoChat.audioPackets.CopyTo( tempAudioPackets );
 		
@@ -255,6 +260,7 @@ public class VideoChatExample : MonoBehaviour {
 			
 			VideoChat.audioPackets.Remove( tempAudioPackets[ i ] );
 		}
+        */
 		#endregion
 		
 
@@ -308,24 +314,24 @@ public class VideoChatExample : MonoBehaviour {
 		  MasterServer.RegisterHost ("MidnightVideoChat", "Test");
 		}
 
-        Invoke("ConnectToRicohThetaS", 1.0f);
+        //Invoke("ConnectToRicohThetaS", 1.0f);
 	  }
 
-    void ConnectToRicohThetaS ()
-    {
-        List<WebCamDevice> cameras = VideoChat.webCamDevices;
-        int cameraIndex = 0;
-        for (int i = 0; i < cameras.Count; i++)
-        {
-            if (cameras[i].name.Equals("RICOH THETA S"))
-            {
-                cameraIndex = i;
-                Debug.Log("Found Ricoh Theta S!");
-                break;
-            }
-        }
-        VideoChat.deviceIndex = cameraIndex;
-    }
+    //void ConnectToRicohThetaS ()
+    //{
+    //    List<WebCamDevice> cameras = VideoChat.webCamDevices;
+    //    int cameraIndex = 0;
+    //    for (int i = 0; i < cameras.Count; i++)
+    //    {
+    //        if (cameras[i].name.Equals("RICOH THETA S"))
+    //        {
+    //            cameraIndex = i;
+    //            Debug.Log("Found Ricoh Theta S!");
+    //            break;
+    //        }
+    //    }
+    //    VideoChat.deviceIndex = cameraIndex;
+    //}
 
 
 	 public void JoinVideoChat ()
@@ -343,6 +349,7 @@ public class VideoChatExample : MonoBehaviour {
 
 	[RPC]
 	void ReceiveVideo( int x, int y, byte[] videoData, string timestamp ) {
+        Debug.Log("receive vide:" + videoData.Length);
 		if( videoData.Length == 1 && Network.connections.Length > 0 ) {
 			for( int i = 0; i < Network.connections.Length; i++ )
 				Network.RemoveRPCs( Network.connections[ 0 ], VideoChat.videoGroup );
@@ -370,6 +377,7 @@ public class VideoChatExample : MonoBehaviour {
     }
 	
 	void OnPlayerConnected( NetworkPlayer player ) {
+        Debug.Log("onplayer connected;" + player.externalIP);
 		Network.RemoveRPCsInGroup( VideoChat.videoGroup );
 		Network.RemoveRPCsInGroup( VideoChat.audioGroup );
 		VideoChat.deviceIndex = VideoChat.deviceIndex; //This resets the camera to prepare for a new connection

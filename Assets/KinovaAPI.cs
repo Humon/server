@@ -182,66 +182,92 @@ public class KinovaAPI : MonoBehaviour
   public static Position FlexBiceps =
 	new Position (-0.08f, -0.46f, 0.22f, 1.37f, -0.26f, 0f);
 
+
+
+    public static void KinovaDebug(string s)
+    {
+        KinovaDebug(s, Color.black);
+    }
+
+
+    public static void KinovaDebug(string s, Color c) {
+        if (c == Color.red)
+        {
+            Debug.LogError(s);
+        }
+        else {
+            Debug.Log(s);
+        }
+        HUD hud = FindObjectOfType<HUD>();
+        if (hud) {
+            hud.serverStatus.text = s;
+            hud.serverStatus.color = c;
+        }
+    }
+
   public static void InitRobot ()
   {
-    Debug.Log ("trying to init robot...");
+    KinovaDebug ("trying to init robot...");
+    
 	if (initSuccessful) {
-	  Debug.Log ("Already initialized");
+	  KinovaDebug ("Already initialized");
 	  return;
 	}
 	int errorCode = _InitRobot ();
 	switch (errorCode) {
 	case 0:
-	  Debug.Log ("Kinova robotic arm loaded and device found");
+	  KinovaDebug ("Kinova robotic arm loaded and device found. Click 'join server' on the client machine.");
+                HUD hud = FindObjectOfType<HUD>();
+                if (hud) hud.startServerButton.SetActive(false);
 	  initSuccessful = true;
 	  break;
 	case -1:
-	  Debug.LogError ("Robot APIs troubles");
+	  KinovaDebug ("Robot APIs troubles");
 	  break;
 	case -2:
-	  Debug.LogError ("Robot - no device found");
+	  KinovaDebug ("Robot - no Kinova device found. Check USB, DeviceManager, and retry.", Color.red);
 	  break;
 	case -3:
-	  Debug.LogError ("Robot - more devices found - not sure which to use");
+	  KinovaDebug ("Robot - more devices found - not sure which to use");
 	  break;
 	case -10:
-	  Debug.LogError ("Robot APIs troubles: InitAPI");
+	  KinovaDebug ("Robot APIs troubles: InitAPI");
 	  break;
 	case -11:
-	  Debug.LogError ("Robot APIs troubles: CloseAPI");
+	  KinovaDebug ("Robot APIs troubles: CloseAPI");
 	  break;
 	case -12:
-	  Debug.LogError ("Robot APIs troubles: SendBasicTrajectory");
+	  KinovaDebug ("Robot APIs troubles: SendBasicTrajectory");
 	  break;
 	case -13:
-	  Debug.LogError ("Robot APIs troubles: GetDevices");
+	  KinovaDebug ("Robot APIs troubles: GetDevices");
 	  break;
 	case -14:
-	  Debug.LogError ("Robot APIs troubles: SetActiveDevice");
+	  KinovaDebug ("Robot APIs troubles: SetActiveDevice");
 	  break;
 	case -15:
-	  Debug.LogError ("Robot APIs troubles: GetAngularCommand");
+	  KinovaDebug ("Robot APIs troubles: GetAngularCommand");
 	  break;
 	case -16:
-	  Debug.LogError ("Robot APIs troubles: MoveHome");
+	  KinovaDebug ("Robot APIs troubles: MoveHome");
 	  break;
 	case -17:
-	  Debug.LogError ("Robot APIs troubles: InitFingers");
+	  KinovaDebug ("Robot APIs troubles: InitFingers");
 	  break;
 	case -18:
-	  Debug.LogError ("Robot APIs troubles: StartForceControl");
+	  KinovaDebug ("Robot APIs troubles: StartForceControl");
 	  break;
     case -19:
-	  Debug.LogError ("Robot APIs troubles: MoveArmAngularVelocity");
+	  KinovaDebug ("Robot APIs troubles: MoveArmAngularVelocity");
 	  break;
 	case -20:
-	  Debug.LogError ("Robot APIs troubles: MoveArmAngularPosition");
+	  KinovaDebug ("Robot APIs troubles: MoveArmAngularPosition");
 	  break;
 	case -123:
-	  Debug.LogError ("Robot APIs troubles: Command Layer Handle");
+	  KinovaDebug ("Robot APIs troubles: Command Layer Handle");
 	  break;
 	default:
-	  Debug.LogError ("Robot - unknown error from initialization");
+	  KinovaDebug ("Robot - unknown error from initialization");
 	  break;
 	}
   }

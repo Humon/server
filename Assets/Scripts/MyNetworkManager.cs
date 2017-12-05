@@ -25,8 +25,12 @@ public class MyMsgTypes
     public static short MSG_GET_CARTESIAN_POSITIONS = 1014;
     public static short MSG_GET_CARTESIAN_COMMANDS = 1015;
     public static short MSG_GET_CACHED_CARTESIAN_COMMANDS = 1016;
+    public static short MSG_INIT_CLIENT_VIEW = 1017;
+    
 
 }
+
+public class InitClientViewMessage : MessageBase { }
 public class GetCachedCartesianCommandsMessage : MessageBase
 {
 
@@ -196,29 +200,31 @@ public class MoveArmWithFingersMessage : MessageBase
 public class MyNetworkManager : MonoBehaviour
 {
 
-  private bool handHasData = false;
-  private bool handsInitialized = false;
-	
-  String commandLeft = "";
-  String commandRight = "";
-  
-  SerialPort handPortR;
-  SerialPort handPortL;
+    private bool handHasData = false;
+    private bool handsInitialized = false;
 
-  private float HandMoveDelay = 0.0f;
+    String commandLeft = "";
+    String commandRight = "";
 
-  public string address = "127.0.0.1";
-  public int port = 11111;  
-  public GameObject cameraRig;
-  public VideoChatExample videoChat;
+    SerialPort handPortR;
+    SerialPort handPortL;
 
-  private bool isAtStartup = true;
-  private bool connectedToServer = false;
-  private bool localRun = false;
+    private float HandMoveDelay = 0.0f;
 
-  public static bool isServer = true;
-    
-  NetworkClient myClient;
+    public string address = "127.0.0.1";
+    public int port = 11111;
+    public GameObject cameraRig;
+    public VideoChatExample videoChat;
+
+    private bool isAtStartup = true;
+    private bool connectedToServer = false;
+    private bool localRun = false;
+
+    public static bool isServer = true;
+
+    NetworkView clientView; // for sending to client(s) connected
+
+    NetworkClient myClient;
 
     //public SampleUserPolling_ReadWrite handController;
     HUD hud;
@@ -227,44 +233,50 @@ public class MyNetworkManager : MonoBehaviour
     {
         hud = FindObjectOfType<HUD>();
     }
-    void Update ()
-  {
-	HandMoveDelay += Time.deltaTime;
-	if (isAtStartup) {
-	  if (Input.GetKeyDown (KeyCode.S)) {
-		SetupServer ();
-		  isServer = true;
-	  }
-            
-	  
-	}
-  }
+    void Update()
+    {
+        HandMoveDelay += Time.deltaTime;
+        if (isAtStartup) {
+            if (Input.GetKeyDown(KeyCode.S)) {
+                SetupServer();
 
-  void OnGUI ()
-  {
-	if (isAtStartup) {
-	  GUI.Label (new Rect (2, 10, 200, 100), "Press S for server (robot)");     
-	  //GUI.Label (new Rect (2, 30, 200, 100), "Press C for client (controller)");
-	  //GUI.Label (new Rect (2, 50, 200, 100), "Press B for both");   
-	 }
-  }
+            }
 
-  // Create a server and listen on a port
-  public void SetupServer ()
-  {
-	KinovaAPI.InitRobot ();
-	NetworkServer.Listen (port);
-	//NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_ARM, ReceiveMoveArm);
-	//NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_ARM_NO_THETAY, ReceiveMoveArmNoThetaY);
-	//NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_ARM_HOME, ReceiveMoveArmHome);
-	NetworkServer.RegisterHandler (MyMsgTypes.MSG_STOP_ARM, ReceiveStopArm);
- //   //Shawn testing 10.1.17
- //   NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_ANGULAR_VELOCITY, RecieveMoveArmAngularVelocity);
-	//NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_ANGULAR_VELOCITY_LOOPED, ReceieveMoveArmAngularVelocityLooped);
- //   NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_ANGULAR_POSITION, RecieveMoveArmAngularPosition);
- //   NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_CARTESIAN_POSITION_WITH_FINGERS, RecieveMoveArms_WithFingers);
+        }
+    }
 
-        // Charlie added the 3 separated functions
+    void OnGUI()
+    {
+        return; // join server is now a button on Unity GUI
+        if (isAtStartup) {
+            GUI.Label(new Rect(2, 10, 200, 100), "Press S for server (robot)");
+            //GUI.Label (new Rect (2, 30, 200, 100), "Press C for client (controller)");
+            //GUI.Label (new Rect (2, 50, 200, 100), "Press B for both");   
+        }
+    }
+
+    public void ReceiveInitClientView(NetworkMessage m) {
+        // Trying to get a way for SERVER to send messages to CLIENT. So far unsuccessful.
+
+        //clientView = gameObject.AddComponent<NetworkView>();
+        //Debug.Log("client view;" + clientView);
+        //Debug.Log("Clientview info:" + clientView.owner + " , name;" + clientView.name);
+        //FindObjectOfType<ClientBroadcaster>().JoinServer();
+
+    }
+
+
+    // Create a server and listen on a port
+    public void SetupServer()
+    {
+        KinovaAPI.InitRobot();
+        NetworkServer.Listen(port);
+        //NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_ARM, ReceiveMoveArm);
+        //NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_ARM_NO_THETAY, ReceiveMoveArmNoThetaY);
+        //NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_ARM_HOME, ReceiveMoveArmHome);
+        NetworkServer.RegisterHandler(MyMsgTypes.MSG_STOP_ARM, ReceiveStopArm);
+        //   //Shawn testing 10.1.17
+
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_SET_ARM_POSITION, ReceiveSetArmPosition);
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_SET_FINGER_POSITION, ReceiveSetFingerPosition);
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_UPDATE, ReceiveMoveArmUpdate);
@@ -275,63 +287,64 @@ public class MyNetworkManager : MonoBehaviour
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_GET_CACHED_CARTESIAN_COMMANDS, ReceiveGetCachedCarteisanCommands);
 
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_CARTESIAN_POSITION_WITH_FINGERS, ReceiveMoveArmWithFingers);
-        
-
-
-    //Testing
-    //  NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_FINGERS, ReceiveMoveFingers);
+        NetworkServer.RegisterHandler(MyMsgTypes.MSG_INIT_CLIENT_VIEW, ReceiveInitClientView);
 
 
 
-      videoChat.gameObject.SetActive (true); 
-      videoChat.StartVideoChat ();
-   
-    isAtStartup = false;
-	Debug.Log ("Server running listening on port " + port);
-  }
-    
-  // Create a client and connect to the server port
- // public void SetupClient ()
- // {
-	//myClient = new NetworkClient ();
-	//InitClient ();    
-	//myClient.Connect (address, port);
-	//Debug.Log ("Started client");
- // }
-    
- // // Create a local client and connect to the local server
- // public void SetupLocalClient ()
- // {
-	//myClient = ClientScene.ConnectLocalServer ();
-	//InitClient ();
-	//videoChat.remoteView.GetComponent<CameraController>().StartLocalStream();
-	//Debug.Log ("Started local client");
- //}
+        //Testing
+        //  NetworkServer.RegisterHandler (MyMsgTypes.MSG_MOVE_FINGERS, ReceiveMoveFingers);
 
- //private void InitClient ()
- //{
- //   myClient.RegisterHandler (MsgType.Connect, OnConnected);
- //   cameraRig.SetActive (true); // transitively enables VIVE controllers
- //   if (!localRun) {
- //     videoChat.gameObject.SetActive (true);
- //   }
- //   isAtStartup = false;
- //}
 
- // // Client function
- // public void OnConnected (NetworkMessage netMsg)
- // {
-	//Debug.Log ("Connected to server on " + address + ":" + port);
-	//if (!localRun) {
-	//  Invoke ("JoinVideoChat", 3.0f);
-	//}
-	//connectedToServer = true;
- // }
 
- // private void JoinVideoChat ()
- // {
-	//videoChat.JoinVideoChat ();
- // }
+        videoChat.gameObject.SetActive(true);
+        videoChat.StartVideoChat();
+
+        isAtStartup = false;
+        Debug.Log("Server running listening on port " + port);
+    }
+
+    // Create a client and connect to the server port
+    // public void SetupClient ()
+    // {
+    //myClient = new NetworkClient ();
+    //InitClient ();    
+    //myClient.Connect (address, port);
+    //Debug.Log ("Started client");
+    // }
+
+    // // Create a local client and connect to the local server
+    // public void SetupLocalClient ()
+    // {
+    //myClient = ClientScene.ConnectLocalServer ();
+    //InitClient ();
+    //videoChat.remoteView.GetComponent<CameraController>().StartLocalStream();
+    //Debug.Log ("Started local client");
+    //}
+
+    //private void InitClient ()
+    //{
+    //   myClient.RegisterHandler (MsgType.Connect, OnConnected);
+    //   cameraRig.SetActive (true); // transitively enables VIVE controllers
+    //   if (!localRun) {
+    //     videoChat.gameObject.SetActive (true);
+    //   }
+    //   isAtStartup = false;
+    //}
+
+    // // Client function
+    // public void OnConnected (NetworkMessage netMsg)
+    // {
+    //Debug.Log ("Connected to server on " + address + ":" + port);
+    //if (!localRun) {
+    //  Invoke ("JoinVideoChat", 3.0f);
+    //}
+    //connectedToServer = true;
+    // }
+
+    // private void JoinVideoChat ()
+    // {
+    //videoChat.JoinVideoChat ();
+    // }
 
     //shawn test
     //    public void SendMoveArmCartesianPosition_MoveRelativeMessage(bool rightArm, float X, float Y, float Z, float ThetaX, float ThetaY, float ThetaZ)
@@ -361,6 +374,8 @@ public class MyNetworkManager : MonoBehaviour
     {
         MoveArmPositionWithFingersMessage m = message.ReadMessage<MoveArmPositionWithFingersMessage>();
         KinovaAPI.MoveArmCartesianPositionWithFingers(m.rightArm, m.x, m.y, m.z, m.thetaX, m.thetaY, m.thetaZ, m.fp1, m.fp2, m.fp3);
+        hud.armPosition.text = m.x.ToString("0.00")+","+m.y.ToString("0.00") + ","+","+m.z.ToString("0.00") + ": rot:"+m.thetaX.ToString("0.00") + "," + m.thetaY.ToString("0.00") + "," + m.thetaZ.ToString("0.00");
+
     }
 
 
@@ -368,7 +383,7 @@ public class MyNetworkManager : MonoBehaviour
         SetArmPositionMessage m = message.ReadMessage<SetArmPositionMessage>();
         KinovaAPI.SetArmPosition(m.rightArm, m.x, m.y, m.z, m.thetaX, m.thetaY, m.thetaZ);
         hud.armPosition.text = m.x + ", " + m.y + ", " + m.z + ", " + m.thetaX + ", " + m.thetaY + ", " + m.thetaZ;
-       // Debug.Log("<color=blue>Received:</color> set arm pos mess:" + m.x + ","+m.y+","+m.z);
+        // Debug.Log("<color=blue>Received:</color> set arm pos mess:" + m.x + ","+m.y+","+m.z);
 
     }
 
@@ -386,18 +401,36 @@ public class MyNetworkManager : MonoBehaviour
         MoveArmUpdateMessage m = message.ReadMessage<MoveArmUpdateMessage>();
         KinovaAPI.MoveArmUpdate();
         hud.updateReceived.text = Time.time.ToString();
-       //Debug.Log("<color=blue>Received:</color> Update arm pos");
+        //Debug.Log("<color=blue>Received:</color> Update arm pos");
     }
 
 
     public void ReceiveFreezeArmPosition(NetworkMessage message)
     {
         FreezeArmPositionMessage m = message.ReadMessage<FreezeArmPositionMessage>();
-        KinovaAPI.FreezeArmPosition();
-        hud.freezeReceived.text = Time.time.ToString();
+        //KinovaAPI.FreezeArmPosition();
 
-       // Debug.Log("<color=blue>Received:</color> update arm positions");
+        // Get my current position
+        //float[] positions = KinovaAPI.GetCartesianPositions();
+
+        //// Send a single command to Kinova to set its destination to the current
+        //KinovaAPI.MoveArmCartesianPositionWithFingers(true,
+        //    positions[0],
+        //    positions[1],
+        //    positions[2],
+        //    positions[3],
+        //    positions[4],
+        //    positions[5],
+        //    positions[6],
+        //    positions[7],
+        //    0);
+
+        //hud.freezeReceived.text = Time.time.ToString();
+
+        // Debug.Log("<color=blue>Received:</color> update arm positions");
     }
+
+
 
     public void ReceiveGetCarteisanPositions(NetworkMessage message)
     {
@@ -412,7 +445,24 @@ public class MyNetworkManager : MonoBehaviour
             + positions[6] + ", "
             + positions[7]
             );
+        //if (clientView == null) {
+
+        string currentArmCartesianPositionStr =
+            positions[0].ToString() + "," + // x pos
+            positions[1].ToString() + "," +
+            positions[2].ToString() + "," +
+            positions[3].ToString() + "," + // x rot
+            positions[4].ToString() + "," +
+            positions[5].ToString() + "," +
+            positions[6].ToString() + "," + // finger 1
+            positions[7].ToString() + "," +
+            0.ToString(); // no 3rd finger, so placing a zero..
+
+        //FindObjectOfType<ClientBroadcaster>().SendPosToClient(currentArmCartesianPositionStr);
+        //}
     }
+
+    
 
     public void ReceiveGetCarteisanCommands(NetworkMessage message)
     {

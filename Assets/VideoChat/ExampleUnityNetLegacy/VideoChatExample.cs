@@ -139,6 +139,7 @@ public class VideoChatExample : MonoBehaviour {
 	}
 
 	void OnGUI () {
+        return; // now handled with scene objects / Unity GUI which has buttons that reference this object and StartVideoChatServer
 		if( !VideoChat.tempImage && !VideoChat.videoPrimed || !UI )
 			return;
 
@@ -197,9 +198,12 @@ public class VideoChatExample : MonoBehaviour {
 		return;
 	}
 
-	
-	
-	
+
+
+    public void IncrementDeviceIndex() {
+        VideoChat.deviceIndex++;
+        FindObjectOfType<HUD>().swapCamera.text = "Swap Camera:" + VideoChat.deviceIndex.ToString();
+    }
 	void Update() {
 
 		// You can utilize VideoChat.receivedAudioPackets and VideoChat.receivedVideoPackets to save/record AV data coming over the network
@@ -282,7 +286,7 @@ public class VideoChatExample : MonoBehaviour {
 				ReceiveVideo( currentPacket.x, currentPacket.y, currentPacket.data, System.Convert.ToString( currentPacket.timestamp ) ); //Test mode just displays on one machine
 			else
             {
-                Debug.Log("sending:" + currentPacket.x + ", " + currentPacket.y + ", " + currentPacket.data.Length + ", " + System.Convert.ToString(currentPacket.timestamp));
+                // Debug.Log("sending:" + currentPacket.x + ", " + currentPacket.y + ", " + currentPacket.data.Length + ", " + System.Convert.ToString(currentPacket.timestamp));
 				videoView.RPC( "ReceiveVideo", RPCMode.Others, currentPacket.x, currentPacket.y, currentPacket.data, System.Convert.ToString( currentPacket.timestamp ) ); //Unity Networking
             }
 		

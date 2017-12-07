@@ -26,8 +26,8 @@ public class MyMsgTypes
     public static short MSG_GET_CARTESIAN_COMMANDS = 1015;
     public static short MSG_GET_CACHED_CARTESIAN_COMMANDS = 1016;
     public static short MSG_INIT_CLIENT_VIEW = 1017;
-    
-
+    public static short MSG_CHAT = 1019;
+    public static short MSG_REQUEST_CARTESIAN_POSITION = 1018;
 }
 
 public class InitClientViewMessage : MessageBase { }
@@ -60,6 +60,21 @@ public class MoveArmPositionWithFingersMessage : MessageBase
     public float fp3;
 }
 
+public class RequestCartesianPositionMessage : MessageBase {
+    public float x;
+    public float y;
+    public float z;
+    public float thetaX;
+    public float thetaY;
+    public float thetaZ;
+    public float fp1;
+    public float fp2;
+    public float fp3;
+}
+
+public class ChatMessage : MessageBase {
+    public string text;
+}
 // Charlie's 3 separate functions for setting/uypdating arm/finger positions
 public class SetArmPositionMessage : MessageBase
 {
@@ -87,6 +102,15 @@ public class MoveArmUpdateMessage : MessageBase
 
 public class FreezeArmPositionMessage : MessageBase
 {
+    public float x;
+    public float y;
+    public float z;
+    public float thetaX;
+    public float thetaY;
+    public float thetaZ;
+    public float fp1;
+    public float fp2;
+    public float fp3;
 
 }
 
@@ -289,6 +313,8 @@ public class MyNetworkManager : MonoBehaviour
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_MOVE_ARM_CARTESIAN_POSITION_WITH_FINGERS, ReceiveMoveArmWithFingers);
         NetworkServer.RegisterHandler(MyMsgTypes.MSG_INIT_CLIENT_VIEW, ReceiveInitClientView);
 
+        NetworkServer.RegisterHandler((short)MyMsgTypes.MSG_CHAT, OnServerChatMessage);
+        NetworkServer.RegisterHandler(MyMsgTypes.MSG_REQUEST_CARTESIAN_POSITION, ReceiveCartesianPositionRequest);
 
 
         //Testing
@@ -301,6 +327,55 @@ public class MyNetworkManager : MonoBehaviour
 
         isAtStartup = false;
         Debug.Log("Server running listening on port " + port);
+    }
+
+
+    private void ReceiveFreezeArmPosition(NetworkMessage netMsg)
+    {
+        var msg = netMsg.ReadMessage<FreezeArmPositionMessage>(); // irrelevent, client doesn't need to send us anything except the request itself
+        FreezeArmPositionMessage m = new FreezeArmPositionMessage();
+
+        float[] positions = KinovaAPI.GetCartesianPositions();
+        m.x = positions[0];
+        m.y = positions[1];
+        m.z = positions[2];
+        m.thetaX = positions[3];
+        m.thetaY = positions[4];
+        m.thetaZ = positions[5];
+        m.fp1 = positions[6];
+        m.fp2 = positions[7];
+        m.fp3 = 0;
+        NetworkServer.SendToAll(MyMsgTypes.MSG_FREEZE_ARM_POSITION, m);
+        Debug.Log("Sending frozen position!");
+    }
+
+    private void ReceiveCartesianPositionRequest(NetworkMessage netMsg) {
+        var msg = netMsg.ReadMessage<RequestCartesianPositionMessage>(); // irrelevent, client doesn't need to send us anything except the request itself
+        RequestCartesianPositionMessage m = new RequestCartesianPositionMessage();
+
+        float[] positions = KinovaAPI.GetCartesianPositions();
+        m.x = positions[0];
+        m.y = positions[1];
+        m.z = positions[2];
+        m.thetaX = positions[3];
+        m.thetaY = positions[4];
+        m.thetaZ = positions[5];
+        m.fp1 = positions[6];
+        m.fp2 = positions[7];
+        m.fp3 = 0;
+        NetworkServer.SendToAll(MyMsgTypes.MSG_REQUEST_CARTESIAN_POSITION, m);
+        Debug.Log("Sending frozen position!");
+    }
+
+    private void OnServerChatMessage(NetworkMessage netMsg)
+    {
+        var msg = netMsg.ReadMessage<ChatMessage>();
+        Debug.Log("New chat message on server: " + msg.text);
+        ChatMessage m = new ChatMessage();
+        m.text = "Server chat;" + msg.text;
+        
+        NetworkServer.SendToAll((short)MyMsgTypes.MSG_CHAT,m);
+        
     }
 
     // Create a client and connect to the server port
@@ -403,32 +478,7 @@ public class MyNetworkManager : MonoBehaviour
         hud.updateReceived.text = Time.time.ToString();
         //Debug.Log("<color=blue>Received:</color> Update arm pos");
     }
-
-
-    public void ReceiveFreezeArmPosition(NetworkMessage message)
-    {
-        FreezeArmPositionMessage m = message.ReadMessage<FreezeArmPositionMessage>();
-        //KinovaAPI.FreezeArmPosition();
-
-        // Get my current position
-        //float[] positions = KinovaAPI.GetCartesianPositions();
-
-        //// Send a single command to Kinova to set its destination to the current
-        //KinovaAPI.MoveArmCartesianPositionWithFingers(true,
-        //    positions[0],
-        //    positions[1],
-        //    positions[2],
-        //    positions[3],
-        //    positions[4],
-        //    positions[5],
-        //    positions[6],
-        //    positions[7],
-        //    0);
-
-        //hud.freezeReceived.text = Time.time.ToString();
-
-        // Debug.Log("<color=blue>Received:</color> update arm positions");
-    }
+    
 
 
 
